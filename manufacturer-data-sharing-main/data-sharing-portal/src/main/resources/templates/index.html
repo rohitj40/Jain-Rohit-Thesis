@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="initial-scale=1.0"
+          http-equiv="Content-Type" />
+    <title>Data Sharing Portal</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}" href="../../css/common.css">
+    <link rel="stylesheet" th:href="@{/css/home.css}" href="../../css/home.css">
+</head>
+<body>
+    <section class="header">
+        <nav>
+            <a href="index.html"><img src="../../images/logo.png"></a>
+            <div class="nav-links">
+                <ul>
+                    <li><a href="">HOME</a></li>
+                    <li><a href="">ABOUT</a></li>
+                    <li><a href="">BLOG</a></li>
+                    <li><a href="">CONTACT</a></li>
+                </ul>
+            </div>
+        </nav>
+
+
+
+        <div id="mainContent" class="text-box">
+            <h1>DATA PORTAL</h1>
+            <p>This portal is used to view and share manufacturing data with other subscribed manufacturer.</p>
+            <div>
+                <button type="button" onclick="showLogin()">LOGIN</button>
+                <button type="button" onclick="showRegister()">REGISTER</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function showLogin() {
+            window.location = document.location.href + "login"
+        }
+
+        function showRegister() {
+            window.location = document.location.href + "register"
+        }
+    </script>
+
+</body>
+</html>

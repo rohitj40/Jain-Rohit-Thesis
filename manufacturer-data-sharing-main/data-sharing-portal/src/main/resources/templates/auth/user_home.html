@@ -1,0 +1,235 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="initial-scale=1.0"
+          http-equiv="Content-Type" />
+    <title>Data Sharing Portal</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}" href="../../css/common.css">
+    <link rel="stylesheet" th:href="@{/css/client.css}" href="../../css/client.css">
+    <link rel="stylesheet" th:href="@{/css/popup.css}" href="../../css/popup.css">
+    <link rel="stylesheet" th:href="@{/css/multi-select.css}" href="../../css/multi-select.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../../js/jquery.multi-select.js"></script>
+    <script src="../../js/user_home.js"></script>
+</head>
+<body>
+<section class="header">
+    <nav>
+        <img src="../../images/logo.png">
+        <div class="nav-links">
+            <ul>
+                <li><a href="">HOME</a></li>
+                <li><a href="">ABOUT</a></li>
+                <li><a href="">BLOG</a></li>
+                <li><a href="">CONTACT</a></li>
+                <li><a href="/logout" th:text="'(' + ${name} + ') LOGOUT'"></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="alertDiv" class="alert popup" style="display:none">
+        <span class="popuptext" id="alertSpan"></span>
+        <a class="close-dot" onclick="closeAlert()">x</a>
+    </div>
+
+    <input id="tabNameToDisplay" type="hidden" th:value="${tabNameToDisplay}" />
+
+    <div id="clientBoard">
+        <div class="tab">
+            <button id="CommonDataButton" class="tablinks" onclick="openTab(event, 'CommonData')">Dashboard</button>
+            <button id="PrivateDataButton" class="tablinks" onclick="openTab(event, 'PrivateData')">Private Data</button>
+            <button id="GrantedPrivateDataButton" class="tablinks" onclick="openTab(event, 'GrantedPrivateData')">Granted Private Data</button>
+            <button id="FileUploadButton" class="tablinks" onclick="openTab(event, 'FileUpload')">Upload New File</button>
+            <button id="RequestAccessButton" class="tablinks" onclick="openTab(event, 'RequestAccess')">Send Access Request to others</button>
+            <button id="SentRequestsButton" class="tablinks" onclick="openTab(event, 'SentRequests')">All sent access requests</button>
+            <button id="ReceivedRequestsButton" class="tablinks" onclick="openTab(event, 'ReceivedRequests')">All received access requests</button>
+        </div>
+
+        <div id="CommonData" class="tabcontent">
+            <div class="contents" th:if="${not #lists.isEmpty(dataModel.manufacturerCommonDataList)}">
+                <table >
+                    <tr>
+                        <th th:each="uiDataModel : ${dataModel.manufacturerCommonDataColumnList}" th:text="${uiDataModel.value}"></th>
+                    </tr>
+                    <tr th:each="uiDataModels : ${dataModel.manufacturerCommonDataList}">
+                        <td th:each="uiDataModel : ${uiDataModels}" th:text="${uiDataModel.value}">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="form-class" th:if="${#lists.isEmpty(dataModel.manufacturerCommonDataList)}">
+                <p>No active common data are found.</p>
+            </div>
+        </div>
+
+        <div id="PrivateData" class="tabcontent">
+            <form id="access-granted-form" method="post" th:if="${not #lists.isEmpty(dataModel.manufacturerPrivateDataList)}">
+                <div class="contents">
+                    <table>
+                        <tr>
+                            <th th:each="uiDataModel : ${dataModel.manufacturerPrivateDataColumnList}">
+                                <input type="checkbox" name="private-data-access" id="private-data-access"
+                                       th:value="${uiDataModel.value}">
+                                <span th:text="${uiDataModel.value}"></span>
+                            </th>
+                        </tr>
+                        <tr th:each="uiDataModels : ${dataModel.manufacturerPrivateDataList}">
+                            <td th:each="uiDataModel : ${uiDataModels}">
+                                <span th:text="${uiDataModel.value}" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="form-class">
+                    <input type="email" id="granted-producer-email" placeholder="ProducerEmailId">
+                    <input id="owningProducerName" type="hidden" th:value="${name}" />
+                    <button id="granted-button" name="granted-button">Grant Access</button>
+                    <button id="removed-button" name="removed-button">Remove Access</button>
+                </div>
+            </form>
+
+            <div class="form-class" th:if="${#lists.isEmpty(dataModel.manufacturerPrivateDataList)}">
+                <p>No active private data are found.</p>
+            </div>
+
+        </div>
+
+        <div id="GrantedPrivateData" class="tabcontent">
+            <div class="contents" th:if="${not #lists.isEmpty(dataModel.grantedManufacturerPrivateDataList)}">
+                <table >
+                    <tr>
+                        <th th:each="uiDataModel : ${dataModel.grantedManufacturerPrivateDataColumnList}" th:text="${uiDataModel.value}"></th>
+                    </tr>
+                    <tr th:each="uiDataModels : ${dataModel.grantedManufacturerPrivateDataList}">
+                        <td th:each="uiDataModel : ${uiDataModels}" th:text="${uiDataModel.value}">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="form-class" th:if="${#lists.isEmpty(dataModel.grantedManufacturerPrivateDataList)}">
+                <p>No active granted private data are found.</p>
+            </div>
+        </div>
+
+        <div id="FileUpload" class="tabcontent">
+            <div class="form-class">
+                <input id="fileUploadProducerName" type="hidden" th:value="${name}" />
+                <form id="upload-form" method="POST" enctype="multipart/form-data">
+                    <input type="file" id="file" name="file">
+                    <button id="upload-button" name="upload-button">Upload</button>
+                </form>
+            </div>
+
+        </div>
+
+        <div id="RequestAccess" class="tabcontent">
+            <div class="form-class">
+                <form id="request-access-form" method="POST">
+                    <table style="text-align:left">
+                        <tr>
+                            <td style="width:40%"><label>Add a subject here : </label></td>
+                            <td><textarea id="message-subject" name="message-subject" rows="1" cols="100" style="height:30px"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td><label>Add your message here : </label></td>
+                            <td><textarea id="message-body" name="message-body" rows="15" cols="100"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td><label>Select to whom you would like to send the message : </label></td>
+                            <td><select name="producer-names" id="producer-names">
+                                <option valur="-1">Select Someone</option>
+                                <option th:each="manufacturers : ${dataModel.activeManufacturers}" th:value="${manufacturers.username}" th:text="${manufacturers.firstName} + ' ' + ${manufacturers.surname} + ' (' + ${manufacturers.email} + ')'">
+                            </select></td>
+                        </tr>
+                    </table>
+                    <input id="sendRequestByProducerName" type="hidden" th:value="${name}" />
+                    <button id="request-access-button" name="request-access-button">Send Request</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="SentRequests" class="tabcontent">
+            <div class="contents" th:if="${not #lists.isEmpty(dataModel.allSentRequest)}">
+                <table >
+                    <tr>
+                        <th>Subject</th>
+                        <th>Message Content</th>
+                        <th>Sent DateTime</th>
+                        <th>Response Received DateTime</th>
+                        <th>Sent To</th>
+                        <th>Received Reply</th>
+                    </tr>
+                    <tr th:each="requests : ${dataModel.allSentRequest}">
+                        <td th:text="${requests.messageSubject}"></td>
+                        <td th:text="${requests.messageBody}"></td>
+                        <td th:text="${requests.messageSentDateTime}"></td>
+                        <td th:text="${requests.replySentDateTime} ?: 'Reply Not Received'"></td>
+                        <td th:text="${requests.askedToProducerUIDetails}"></td>
+                        <td th:if="${requests.isMessageReplied}">
+                            <textarea th:text="${requests.messageReply}" rows="10" cols="50" disabled></textarea>
+                        </td>
+                        <td th:unless="${requests.isMessageReplied}">
+                            <label>No reply has been received yet.</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="form-class" th:if="${not #lists.isEmpty(dataModel.allSentRequest)}">
+                <form method="GET" action="/user">
+                    <input th:id="tabNameToDisplayRequestSent" th:name="tabNameToDisplayRequestSent" type="hidden" th:value="SentRequests" />
+                    <button id="request-sent-refresh-button" name="request-sent-refresh-button">Refresh</button>
+                </form>
+            </div>
+            <div class="form-class" th:if="${#lists.isEmpty(dataModel.allSentRequest)}">
+                No request is sent by you yet.
+            </div>
+        </div>
+
+        <div id="ReceivedRequests" class="tabcontent">
+            <div class="contents" th:if="${not #lists.isEmpty(dataModel.allReceivedRequest)}">
+                <table >
+                    <tr>
+                        <th>Subject</th>
+                        <th>Message Content</th>
+                        <th>Received DateTime</th>
+                        <th>Response Sent DateTime</th>
+                        <th>Received From</th>
+                        <th>Reply</th>
+                    </tr>
+                    <tr th:each="requests : ${dataModel.allReceivedRequest}">
+                        <td th:text="${requests.messageSubject}"></td>
+                        <td th:text="${requests.messageBody}"></td>
+                        <td th:text="${requests.messageSentDateTime}"></td>
+                        <td th:text="${requests.replySentDateTime} ?: 'Response Not Sent.'"></td>
+                        <td th:text="${requests.askedByProducerUIDetails}"></td>
+                        <td th:if="${requests.isMessageReplied}">
+                            <label>You already replied with :</label>
+                            <textarea th:text="${requests.messageReply}" rows="10" cols="50" disabled></textarea>
+                        </td>
+                        <td th:unless="${requests.isMessageReplied}">
+                            <form th:id="'request-access-form' + ${requests.messageId}" method="POST">
+                                <textarea th:id="'reply-body' + ${requests.messageId}" name="reply-body" rows="15" cols="100"></textarea>
+                                <br>
+                                <input th:id="'replyMessageId' + ${requests.messageId}" type="hidden" th:value="${requests.messageId}" />
+                                <button th:id="'reply-button' + ${requests.messageId}" th:onclick="sentAccessReply();" class="reply-button-class">Send Reply</button>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="form-class" th:if="${not #lists.isEmpty(dataModel.allReceivedRequest)}">
+                <form method="GET" action="/user">
+                    <input th:id="tabNameToDisplayRequestReceived" th:name="tabNameToDisplayRequestReceived" type="hidden" th:value="ReceivedRequests" />
+                    <button id="request-received-refresh-button" name="request-received-refresh-button">Refresh</button>
+                </form>
+            </div>
+            <div class="form-class" th:if="${#lists.isEmpty(dataModel.allReceivedRequest)}">
+                No response is received yet.
+            </div>
+        </div>
+
+    </div>
+
+</section>
+</body>
+</html>

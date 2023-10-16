@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="initial-scale=1.0"
+          http-equiv="Content-Type" />
+    <title>Data Sharing Portal</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}" href="../../css/common.css">
+    <link rel="stylesheet" th:href="@{/css/register.css}" href="../../css/register.css">
+</head>
+<body>
+<section class="header">
+    <nav>
+        <a href="index.html"><img src="../../images/logo.png"></a>
+        <div class="nav-links">
+            <ul>
+                <li><a href="">HOME</a></li>
+                <li><a href="">ABOUT</a></li>
+                <li><a href="">BLOG</a></li>
+                <li><a href="">CONTACT</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="alertDiv" class="alert" th:if="${register.welcomeText} != null">
+        <span th:text="${register.welcomeText}"></span>
+        <a class="close-dot" onclick="closeAlert()">x</a>
+    </div>
+
+    <div id="alertErrorDiv" class="errorAlert" th:if="${register.errorText} != null">
+        <span th:text="${register.errorText}"></span>
+        <a class="close-dot" onclick="closeAlert()">x</a>
+    </div>
+
+    <div id="modelRegisterBox">
+        <div class="register">
+            <form action="#" th:action="@{/register}" th:object="${registerModel}"  method="post">
+                <input type="text" th:field="*{firstname}" placeholder="First Name">
+                <input type="text" th:field="*{surname}" placeholder="Surname">
+                <input type="email" th:field="*{email}" placeholder="Email Address">
+
+                <button type="submit">Join</button>
+            </form>
+        </div>
+
+        <a class="close-dot" onclick="closeRegister()">x</a>
+    </div>
+</section>
+
+
+
+<script>
+    function closeRegister(){
+        window.location = window.location.origin
+    }
+
+    function closeAlert(){
+        alertDiv = document.getElementById("alertDiv");
+        if(alertDiv != null) {
+            alertDiv.style.display = "none";
+        }
+
+        alertErrorDiv = document.getElementById("alertErrorDiv");
+        if(alertErrorDiv != null) {
+            alertErrorDiv.style.display = "none";
+        }
+        alertErrorDiv.style.display = "none";
+    }
+</script>
+
+</body>
+</html>
